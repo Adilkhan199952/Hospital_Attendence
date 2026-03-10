@@ -1,7 +1,10 @@
 import axios from 'axios';
 import { AuthResponse, User, Attendance, AttendanceStats } from '../types';
 
+// Fallback API URL for development/testing
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+
+console.log('API Base URL:', API_BASE_URL); // Debug log
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -21,6 +24,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.error('API Error:', error); // Debug log
     if (error.response?.status === 401) {
       // Token expired or invalid
       localStorage.removeItem('token');

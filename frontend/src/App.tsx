@@ -87,6 +87,29 @@ const AppRoutes: React.FC = () => {
 };
 
 function App() {
+  // Add error boundary for debugging
+  const [hasError, setHasError] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleError = (error: ErrorEvent) => {
+      console.error('App Error:', error);
+      setHasError(true);
+    };
+
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
+  }, []);
+
+  if (hasError) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        <h1>Something went wrong!</h1>
+        <p>Please check the browser console for errors.</p>
+        <button onClick={() => window.location.reload()}>Reload Page</button>
+      </div>
+    );
+  }
+
   return (
     <AuthProvider>
       <Router>
