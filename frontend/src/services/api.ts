@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { AuthResponse, User, Attendance, AttendanceStats } from '../types';
 
-// Fallback API URL for development/testing
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// Use deployed backend URL
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://hospital-attendence-2.onrender.com/api';
 
 console.log('API Base URL:', API_BASE_URL); // Debug log
 

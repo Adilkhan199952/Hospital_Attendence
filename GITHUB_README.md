@@ -84,7 +84,7 @@ docker-compose up -d
 
 # Access the application
 # Frontend: http://localhost:3000
-# Backend: http://localhost:5000
+# Backend: https://hospital-attendence-2.onrender.com (deployed)
 # MongoDB: localhost:27017
 ```
 

@@ -51,11 +51,9 @@ services:
     container_name: hospital-frontend
     restart: unless-stopped
     environment:
-      REACT_APP_API_URL: http://localhost:5000/api
+      REACT_APP_API_URL: https://hospital-attendence-2.onrender.com/api
     ports:
       - "3000:80"
-    depends_on:
-      - backend
     networks:
       - hospital-network
     healthcheck:

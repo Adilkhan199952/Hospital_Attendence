@@ -31,7 +31,7 @@ echo 🚀 Deploying Development Environment...
 docker-compose down
 docker-compose up -d --build
 echo ✅ Development environment deployed!
-echo 📊 Backend: http://localhost:5000
+echo 📊 Backend: https://hospital-attendence-2.onrender.com (deployed)
 echo 🎨 Frontend: http://localhost:3000
 echo 🗄️  MongoDB: localhost:27017
 goto end
@@ -46,7 +46,7 @@ if not exist .env.production (
 docker-compose -f docker-compose.prod.yml down
 docker-compose -f docker-compose.prod.yml up -d --build
 echo ✅ Production environment deployed!
-echo 📊 Backend: http://localhost:5000
+echo 📊 Backend: https://hospital-attendence-2.onrender.com (deployed)
 echo 🎨 Frontend: http://localhost:80
 goto end
 

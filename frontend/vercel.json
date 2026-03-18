@@ -32,6 +32,6 @@
     }
   ],
   "env": {
-    "REACT_APP_API_URL": "@hospital-api-url"
+    "REACT_APP_API_URL": "https://hospital-attendence-2.onrender.com/api"
   }
 }

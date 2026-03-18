@@ -30,14 +30,12 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        REACT_APP_API_URL: ${REACT_APP_API_URL}
+        REACT_APP_API_URL: https://hospital-attendence-2.onrender.com/api
     container_name: hospital-frontend-prod
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
-    depends_on:
-      - backend
     networks:
       - hospital-network
     healthcheck:
