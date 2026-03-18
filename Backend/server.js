@@ -14,10 +14,14 @@ const app = express();
 
 // ✅ CORS configuration
 const corsOptions = {
-  origin:
-    process.env.NODE_ENV === "production"
-      ? process.env.FRONTEND_URL || "https://your-frontend-domain.com"
-      : ["http://localhost:3000", "http://localhost:3001"],
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:3001", 
+    "https://your-frontend-domain.com",
+    "https://hospital-attendence.vercel.app",
+    "https://hospital-attendence-git-main-adilkhan199952.vercel.app",
+    "https://hospital-attendence-adilkhan199952.vercel.app"
+  ],
   credentials: true,
   optionsSuccessStatus: 200,
 };
