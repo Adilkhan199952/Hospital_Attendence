@@ -15,12 +15,11 @@ const app = express();
 // ✅ CORS configuration
 const corsOptions = {
   origin: [
-    "http://localhost:3000",
-    "http://localhost:3001", 
-    "https://your-frontend-domain.com",
+    "https://akhospital-attendance.netlify.app",
     "https://hospital-attendence.vercel.app",
     "https://hospital-attendence-git-main-adilkhan199952.vercel.app",
-    "https://hospital-attendence-adilkhan199952.vercel.app"
+    "https://hospital-attendence-adilkhan199952.vercel.app",
+    "https://your-frontend-domain.com"
   ],
   credentials: true,
   optionsSuccessStatus: 200,

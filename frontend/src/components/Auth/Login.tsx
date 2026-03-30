@@ -102,12 +102,7 @@ const Login: React.FC = () => {
             </button>
           </div>
           
-          <div className="text-center text-sm text-gray-600">
-            <p>Demo Credentials:</p>
-            <p>Admin: admin@hospital.com / admin123</p>
-            <p>Staff: sarah@hospital.com / staff123</p>
-            <p className="mt-2 text-xs text-blue-600">Backend: https://hospital-attendence-2.onrender.com</p>
-          </div>
+
         </form>
       </div>
     </div>
