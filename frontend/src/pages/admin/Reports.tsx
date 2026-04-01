@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { attendanceAPI } from '../../services/api';
 import { AttendanceStats } from '../../types';
-import { BarChart3, TrendingUp, Users, Calendar } from 'lucide-react';
+import { BarChart3, TrendingUp, Users, Calendar, Download, FileText, FileSpreadsheet, FileType } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import { Document, Packer, Paragraph, Table, TableCell, TableRow, TextRun, AlignmentType, WidthType } from 'docx';
 
 const Reports: React.FC = () => {
   const [stats, setStats] = useState<AttendanceStats | null>(null);
@@ -20,6 +25,191 @@ const Reports: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const exportToPDF = () => {
+    if (!stats) return;
+
+    const doc = new jsPDF();
+    const date = new Date().toLocaleDateString();
+    
+    // Title
+    doc.setFontSize(20);
+    doc.text('Hospital Attendance Report', 14, 20);
+    
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${date}`, 14, 28);
+    
+    // Summary Statistics
+    doc.setFontSize(14);
+    doc.text('Summary Statistics', 14, 40);
+    
+    const summaryData = [
+      ['Metric', 'Value'],
+      ['Total Staff', stats.totalStaff.toString()],
+      ['Present Today', stats.presentToday.toString()],
+      ['Absent Today', stats.absentToday.toString()],
+      ['Late Arrivals', stats.lateToday.toString()],
+      ['Attendance Rate', `${attendanceRate}%`],
+      ['Punctuality Rate', `${punctualityRate}%`],
+      ['Monthly Attendance', stats.monthlyAttendance.toString()],
+    ];
+
+    autoTable(doc, {
+      startY: 45,
+      head: [summaryData[0]],
+      body: summaryData.slice(1),
+      theme: 'grid',
+      headStyles: { fillColor: [59, 130, 246] },
+    });
+
+    doc.save(`attendance-report-${date}.pdf`);
+  };
+
+  const exportToExcel = () => {
+    if (!stats) return;
+
+    const date = new Date().toLocaleDateString();
+    
+    const worksheetData = [
+      ['Hospital Attendance Report'],
+      [`Generated on: ${date}`],
+      [],
+      ['Metric', 'Value'],
+      ['Total Staff', stats.totalStaff],
+      ['Present Today', stats.presentToday],
+      ['Absent Today', stats.absentToday],
+      ['Late Arrivals', stats.lateToday],
+      ['Attendance Rate', `${attendanceRate}%`],
+      ['Punctuality Rate', `${punctualityRate}%`],
+      ['Monthly Attendance', stats.monthlyAttendance],
+      [],
+      ['Performance Indicators'],
+      ['Attendance Status', attendanceRate >= 90 ? 'Excellent' : attendanceRate >= 75 ? 'Good' : 'Needs Improvement'],
+      ['Punctuality Status', punctualityRate >= 85 ? 'Excellent' : punctualityRate >= 70 ? 'Good' : 'Needs Improvement'],
+      ['Absenteeism Status', stats.absentToday === 0 ? 'Perfect' : stats.absentToday <= 2 ? 'Acceptable' : 'High'],
+    ];
+
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Attendance Report');
+    
+    XLSX.writeFile(workbook, `attendance-report-${date}.xlsx`);
+  };
+
+  const exportToWord = async () => {
+    if (!stats) return;
+
+    const date = new Date().toLocaleDateString();
+
+    const doc = new Document({
+      sections: [{
+        properties: {},
+        children: [
+          new Paragraph({
+            text: 'Hospital Attendance Report',
+            heading: 'Heading1',
+            alignment: AlignmentType.CENTER,
+          }),
+          new Paragraph({
+            text: `Generated on: ${date}`,
+            alignment: AlignmentType.CENTER,
+          }),
+          new Paragraph({ text: '' }),
+          new Paragraph({
+            text: 'Summary Statistics',
+            heading: 'Heading2',
+          }),
+          new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [
+              new TableRow({
+                children: [
+                  new TableCell({ 
+                    children: [new Paragraph({ 
+                      children: [new TextRun({ text: 'Metric', bold: true })]
+                    })] 
+                  }),
+                  new TableCell({ 
+                    children: [new Paragraph({ 
+                      children: [new TextRun({ text: 'Value', bold: true })]
+                    })] 
+                  }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({ children: [new Paragraph('Total Staff')] }),
+                  new TableCell({ children: [new Paragraph(stats.totalStaff.toString())] }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({ children: [new Paragraph('Present Today')] }),
+                  new TableCell({ children: [new Paragraph(stats.presentToday.toString())] }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({ children: [new Paragraph('Absent Today')] }),
+                  new TableCell({ children: [new Paragraph(stats.absentToday.toString())] }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({ children: [new Paragraph('Late Arrivals')] }),
+                  new TableCell({ children: [new Paragraph(stats.lateToday.toString())] }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({ children: [new Paragraph('Attendance Rate')] }),
+                  new TableCell({ children: [new Paragraph(`${attendanceRate}%`)] }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({ children: [new Paragraph('Punctuality Rate')] }),
+                  new TableCell({ children: [new Paragraph(`${punctualityRate}%`)] }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({ children: [new Paragraph('Monthly Attendance')] }),
+                  new TableCell({ children: [new Paragraph(stats.monthlyAttendance.toString())] }),
+                ],
+              }),
+            ],
+          }),
+          new Paragraph({ text: '' }),
+          new Paragraph({
+            text: 'Performance Indicators',
+            heading: 'Heading2',
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({ text: 'Attendance Status: ', bold: true }),
+              new TextRun(attendanceRate >= 90 ? 'Excellent' : attendanceRate >= 75 ? 'Good' : 'Needs Improvement'),
+            ],
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({ text: 'Punctuality Status: ', bold: true }),
+              new TextRun(punctualityRate >= 85 ? 'Excellent' : punctualityRate >= 70 ? 'Good' : 'Needs Improvement'),
+            ],
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({ text: 'Absenteeism Status: ', bold: true }),
+              new TextRun(stats.absentToday === 0 ? 'Perfect' : stats.absentToday <= 2 ? 'Acceptable' : 'High'),
+            ],
+          }),
+        ],
+      }],
+    });
+
+    const blob = await Packer.toBlob(doc);
+    saveAs(blob, `attendance-report-${date}.docx`);
   };
 
   if (loading) {
@@ -56,9 +246,39 @@ const Reports: React.FC = () => {
 
   return (
     <div className="p-6">
-      <div className="flex items-center mb-6">
-        <BarChart3 className="h-8 w-8 text-blue-600 mr-3" />
-        <h1 className="text-3xl font-bold text-gray-900">Reports & Analytics</h1>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center">
+          <BarChart3 className="h-8 w-8 text-blue-600 mr-3" />
+          <h1 className="text-3xl font-bold text-gray-900">Reports & Analytics</h1>
+        </div>
+        
+        {/* Export Buttons */}
+        <div className="flex gap-2">
+          <button
+            onClick={exportToPDF}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            title="Export to PDF"
+          >
+            <FileText className="h-4 w-4" />
+            <span className="hidden sm:inline">PDF</span>
+          </button>
+          <button
+            onClick={exportToExcel}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            title="Export to Excel"
+          >
+            <FileSpreadsheet className="h-4 w-4" />
+            <span className="hidden sm:inline">Excel</span>
+          </button>
+          <button
+            onClick={exportToWord}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            title="Export to Word"
+          >
+            <FileType className="h-4 w-4" />
+            <span className="hidden sm:inline">Word</span>
+          </button>
+        </div>
       </div>
 
       {/* Key Metrics */}
