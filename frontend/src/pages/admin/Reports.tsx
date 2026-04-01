@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { attendanceAPI } from '../../services/api';
 import { AttendanceStats } from '../../types';
-import { BarChart3, TrendingUp, Users, Calendar, Download, FileText, FileSpreadsheet, FileType } from 'lucide-react';
+import { BarChart3, TrendingUp, Users, Calendar, FileText, FileSpreadsheet, FileType } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
