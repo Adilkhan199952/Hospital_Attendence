@@ -12,15 +12,30 @@ connectDB();
 
 const app = express();
 
-// ✅ CORS configuration
+// ✅ CORS configuration - Allow all Vercel deployments
 const corsOptions = {
-  origin: [
-    "https://akhospital-attendance.netlify.app",
-    "https://hospital-attendence.vercel.app",
-    "https://hospital-attendence-git-main-adilkhan199952.vercel.app",
-    "https://hospital-attendence-adilkhan199952.vercel.app",
-    "https://your-frontend-domain.com"
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "https://akhospital-attendance.netlify.app",
+    ];
+    
+    // Allow all Vercel deployments (production and preview)
+    if (origin.includes('.vercel.app')) {
+      return callback(null, true);
+    }
+    
+    // Check if origin is in allowed list
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200,
 };
